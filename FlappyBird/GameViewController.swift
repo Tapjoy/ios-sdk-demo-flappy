@@ -12,13 +12,13 @@ import SpriteKit
 extension SKNode {
     class func unarchiveFromFile(file : NSString) -> SKNode? {
         
-        let path = NSBundle.mainBundle().pathForResource(file, ofType: "sks")
+        let path = NSBundle.mainBundle().pathForResource(file as String, ofType: "sks")
         
-        let sceneData = NSData(contentsOfFile: path!, options: .DataReadingMappedIfSafe, error: nil)
+        let sceneData = try? NSData(contentsOfFile: path!, options: .DataReadingMappedIfSafe)
         let archiver = NSKeyedUnarchiver(forReadingWithData: sceneData!)
         
         archiver.setClass(self.classForKeyedUnarchiver(), forClassName: "SKScene")
-        let scene = archiver.decodeObjectForKey(NSKeyedArchiveRootObjectKey) as GameScene
+        let scene = archiver.decodeObjectForKey(NSKeyedArchiveRootObjectKey) as! GameScene
         archiver.finishDecoding()
         return scene
     }
@@ -48,7 +48,7 @@ class GameViewController: UIViewController, TJPlacementDelegate {
             Tapjoy.setUserLevel(1)
             
             // Configure the view.
-            let skView = self.view as SKView
+            let skView = self.view as! SKView
             skView.showsFPS = true
             skView.showsNodeCount = true
             
@@ -66,17 +66,11 @@ class GameViewController: UIViewController, TJPlacementDelegate {
         return true
     }
 
-    override func supportedInterfaceOrientations() -> Int {
+    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
         if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
-            return Int(UIInterfaceOrientationMask.AllButUpsideDown.rawValue)
+            return UIInterfaceOrientationMask.AllButUpsideDown
         } else {
-            return Int(UIInterfaceOrientationMask.All.rawValue)
+            return UIInterfaceOrientationMask.All
         }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Release any cached data, images, etc that aren't in use.
-    }
-    
 }
